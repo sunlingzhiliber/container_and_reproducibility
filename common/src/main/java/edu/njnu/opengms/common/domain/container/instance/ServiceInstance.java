@@ -20,5 +20,6 @@ public class ServiceInstance<T> extends BaseEntity {
     String name;
     StatusEnum statusEnum;
     InstanceEnum instanceEnum;
+    String creator;
     T service;
 }

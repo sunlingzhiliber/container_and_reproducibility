@@ -49,6 +49,18 @@ public class G2SControllerImpl implements BaseController<AddG2SDTO, SplitPageDTO
         return ResultUtils.success(containerFeign.listEvaluationServices(evaluationServices).getData());
     }
 
+    @RequestMapping (value = "/{id}/evaluationService/{evaluationId}", method = RequestMethod.DELETE)
+    public JsonResult evaluationServices(@PathVariable String id,@PathVariable String evaluationId) {
+        GeographicSimulationScene geographicSimulationScene = g2SRepository.findById(id).orElseThrow(MyException::noObject);
+        if(geographicSimulationScene.getEvaluation()==null){
+            return ResultUtils.success(null);
+        }
+        List<String> evaluationServices = geographicSimulationScene.getEvaluation().getEvaluationServices();
+        evaluationServices.remove(evaluationId);
+        geographicSimulationScene.getEvaluation().setEvaluationServices(evaluationServices);
+        return ResultUtils.success(g2SRepository.save(geographicSimulationScene));
+    }
+
 
     @RequestMapping (value = "/{id}/dataServices", method = RequestMethod.GET)
     public JsonResult dataServices(@PathVariable String id) {

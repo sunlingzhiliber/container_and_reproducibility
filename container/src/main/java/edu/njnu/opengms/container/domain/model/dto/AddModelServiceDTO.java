@@ -19,6 +19,7 @@ public class AddModelServiceDTO  implements ToDomainConverter<ModelService> {
     String name;
     String description;
     String details;
+    String creator;
     List<String> tags;
     String resourceUrl;
     ModelBehavior behavior;

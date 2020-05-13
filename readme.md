@@ -1,11 +1,9 @@
 # 项目结构说明
 
-## API
+## container
 
-## Common
+## common
 
-## DC
+## r2
 
-## MC
-
-## DEMO
+## encapsulation

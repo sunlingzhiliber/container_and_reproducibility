@@ -19,6 +19,7 @@ public class AddDataProcessServiceDTO  implements ToDomainConverter<DataProcessS
     String name;
     String description;
     String details;
+    String creator;
     List<String> tags;
     String resourceUrl;
     ProcessBehavior behavior;

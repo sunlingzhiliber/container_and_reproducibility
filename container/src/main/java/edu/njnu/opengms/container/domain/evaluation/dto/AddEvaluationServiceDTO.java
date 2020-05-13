@@ -22,6 +22,7 @@ public class AddEvaluationServiceDTO implements ToDomainConverter<EvaluationServ
     String details;
     List<String> tags;
     String resourceUrl;
+    String creator;
     Map<String,String> indicatorInfo;
     EvaluationBehavior behavior;
 }

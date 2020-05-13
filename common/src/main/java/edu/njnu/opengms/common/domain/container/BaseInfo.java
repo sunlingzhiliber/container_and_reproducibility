@@ -19,5 +19,6 @@ public class BaseInfo extends BaseEntity {
     public List<String> tags;
     public String details;
     public String snapshot;
+    public String creator;
     public String resourceUrl;
 }
