@@ -32,6 +32,7 @@ public interface ContainerFeign {
     @RequestMapping (value = "/data_process_service",method = RequestMethod.GET)
     JsonResult listDataProcessServices(@SpringQueryMap  SplitPageDTO splitPageDTO);
 
+
     @RequestMapping (value = "/model_service/{id}",method = RequestMethod.GET)
     JsonResult getModelService(@PathVariable String id);
 
@@ -68,8 +69,6 @@ public interface ContainerFeign {
     @RequestMapping (value = "/evaluation_service/{id}",method = RequestMethod.GET)
     JsonResult getEvaluationServiceById(@PathVariable ("id") String id);
 
-    @RequestMapping (value = "/data_service/listByIds",method = RequestMethod.GET)
-    JsonResult listDataServiceByIds(@RequestParam ("ids") List<String> id);
 
     @RequestMapping (value = "/model_service/listByIds", method = RequestMethod.GET)
     JsonResult listModelServiceByIds(@RequestParam ("ids") List<String> ids);
@@ -77,11 +76,19 @@ public interface ContainerFeign {
     @RequestMapping (value = "/data_process_service/listByIds", method = RequestMethod.GET)
     JsonResult listDataProcessServiceByIds(@RequestParam ("ids") List<String> ids);
 
-    @RequestMapping (value = "/evaluation_service/listByIds", method = RequestMethod.GET)
-    JsonResult listEvaluationServices(@RequestParam ("ids") List<String> evaluationServices);
+
+    @RequestMapping (value = "/model_service/listVOByIds", method = RequestMethod.GET)
+    JsonResult listModelServiceVOByIds(@RequestParam ("ids") List<String> ids);
+
+    @RequestMapping (value = "/data_process_service/listVOByIds", method = RequestMethod.GET)
+    JsonResult listDataProcessServiceVOByIds(@RequestParam ("ids") List<String> ids);
+
+    @RequestMapping (value = "/evaluation_service/listVOByIds", method = RequestMethod.GET)
+    JsonResult listEvaluationServicesVO(@RequestParam ("ids") List<String> evaluationServices);
 
 
-
+    @RequestMapping (value = "/data_service/listByIds", method = RequestMethod.GET)
+    JsonResult listDataServiceByIds(@RequestParam ("ids") List<String> id);
 
     @Component
     class FeignServiceFallBack implements ContainerFeign {
@@ -163,7 +170,17 @@ public interface ContainerFeign {
         }
 
         @Override
-        public JsonResult listEvaluationServices(List<String> evaluationServices) {
+        public JsonResult listModelServiceVOByIds(List<String> ids) {
+            return null;
+        }
+
+        @Override
+        public JsonResult listDataProcessServiceVOByIds(List<String> ids) {
+            return null;
+        }
+
+        @Override
+        public JsonResult listEvaluationServicesVO(List<String> evaluationServices) {
             return null;
         }
     }

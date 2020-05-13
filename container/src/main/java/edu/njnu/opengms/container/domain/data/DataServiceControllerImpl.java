@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,11 +59,8 @@ public class DataServiceControllerImpl implements BaseController<AddDataServiceD
 
     @RequestMapping (value = "/listByIds", method = RequestMethod.GET)
     public JsonResult listByIds(@RequestParam("ids")List<String>ids){
-        List<DataService> dataServiceList= Lists.newArrayList( dataRepository.findAllById(ids));
-        return ResultUtils.success(dataServiceList);
+        return ResultUtils.success(Lists.newArrayList(dataRepository.findAllById(ids)));
     }
-
-
 
 
     @RequestMapping (value = "/toGeoserver/{id}",method = RequestMethod.POST)
@@ -133,8 +129,7 @@ public class DataServiceControllerImpl implements BaseController<AddDataServiceD
         File dir=new File(String.valueOf(Paths.get(pathString).resolve(key)));
         dir.mkdir();
         Files.copy(file.getInputStream(), Paths.get(pathString).resolve(key).resolve(name), StandardCopyOption.REPLACE_EXISTING);
-        FileStorage fileStorage=FileStorage.builder().key(key).name(name).contentType(file.getContentType()).size(file.getSize()).build();
-        return fileStorage;
+        return FileStorage.builder().key(key).name(name).contentType(file.getContentType()).size(file.getSize()).build();
     }
 
 
@@ -148,9 +143,7 @@ public class DataServiceControllerImpl implements BaseController<AddDataServiceD
 
     @Override
     public JsonResult list(SplitPageDTO findDTO) {
-        Page<DataService> dataServicePage=dataRepository.findAll(findDTO.getPageable());
-        //注意如果存在VO的话，记得遍历取出VO想要的字段
-        return ResultUtils.success(dataServicePage);
+        return ResultUtils.success(dataRepository.findAll(findDTO.getPageable()));
     }
 
     @Override

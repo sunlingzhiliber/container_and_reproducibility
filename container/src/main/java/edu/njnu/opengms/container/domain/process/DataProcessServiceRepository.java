@@ -1,6 +1,7 @@
 package edu.njnu.opengms.container.domain.process;
 
 import edu.njnu.opengms.common.domain.container.process.DataProcessService;
+import edu.njnu.opengms.container.domain.process.vo.DataProcessServiceVO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -15,5 +16,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface DataProcessServiceRepository extends MongoRepository<DataProcessService,String> {
-    Page<DataProcessService> getByNameContainsIgnoreCase(String name, Pageable pageable);
+    Page<DataProcessServiceVO> getByNameContainsIgnoreCase(String name, Pageable pageable);
 }

@@ -4,16 +4,21 @@ import com.google.common.collect.Lists;
 import edu.njnu.opengms.common.controller.BaseController;
 import edu.njnu.opengms.common.domain.container.model.ModelService;
 import edu.njnu.opengms.common.dto.SplitPageDTO;
+import edu.njnu.opengms.common.utils.CopyUtils;
 import edu.njnu.opengms.common.utils.JsonResult;
 import edu.njnu.opengms.common.utils.ResultUtils;
 import edu.njnu.opengms.container.domain.model.dto.AddModelServiceDTO;
+import edu.njnu.opengms.container.domain.model.vo.ModelServiceVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @ClassName ModelServiceControllerImpl
@@ -29,10 +34,18 @@ public class ModelServiceControllerImpl  implements BaseController<AddModelServi
     @Autowired
     ModelServiceRepository modelServiceRepository;
 
+    @RequestMapping (value = "/listVOByIds", method = RequestMethod.GET)
+    public JsonResult listVOByIds(@RequestParam ("ids") List<String> ids) {
+        return ResultUtils.success(StreamSupport.stream(modelServiceRepository.findAllById(ids).spliterator(), true).map(service -> {
+            ModelServiceVO vo = new ModelServiceVO();
+            CopyUtils.copyProperties(service, vo);
+            return vo;
+        }).collect(Collectors.toList()));
+    }
+
     @RequestMapping (value = "/listByIds", method = RequestMethod.GET)
     public JsonResult listByIds(@RequestParam("ids")List<String>ids){
-        List<ModelService> modelServiceList= Lists.newArrayList( modelServiceRepository.findAllById(ids));
-        return ResultUtils.success(modelServiceList);
+        return ResultUtils.success(Lists.newArrayList(modelServiceRepository.findAllById(ids)));
     }
 
     @Override
@@ -56,7 +69,12 @@ public class ModelServiceControllerImpl  implements BaseController<AddModelServi
     @Override
     public JsonResult list(SplitPageDTO findDTO) {
         if(findDTO.getValue()==null||findDTO.getValue().equals("")){
-            return ResultUtils.success(modelServiceRepository.findAll(findDTO.getPageable()));
+            Page<ModelService> all = modelServiceRepository.findAll(findDTO.getPageable());
+            return ResultUtils.success(all.map(service -> {
+                ModelServiceVO vo = new ModelServiceVO();
+                CopyUtils.copyProperties(service, vo);
+                return vo;
+            }));
         }
         return ResultUtils.success(modelServiceRepository.getByNameContainsIgnoreCase(findDTO.getValue(),findDTO.getPageable()));
     }

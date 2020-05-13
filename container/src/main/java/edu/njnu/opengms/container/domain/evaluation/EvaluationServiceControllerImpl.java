@@ -1,13 +1,14 @@
 package edu.njnu.opengms.container.domain.evaluation;
 
-import com.google.common.collect.Lists;
 import edu.njnu.opengms.common.controller.BaseController;
 import edu.njnu.opengms.common.domain.container.evaluation.EvaluationService;
 import edu.njnu.opengms.common.dto.SplitPageDTO;
 import edu.njnu.opengms.common.exception.MyException;
+import edu.njnu.opengms.common.utils.CopyUtils;
 import edu.njnu.opengms.common.utils.JsonResult;
 import edu.njnu.opengms.common.utils.ResultUtils;
 import edu.njnu.opengms.container.domain.evaluation.dto.AddEvaluationServiceDTO;
+import edu.njnu.opengms.container.domain.evaluation.vo.EvaluationServiceVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @ClassName EvaluationServiceControllerImpl
@@ -31,11 +34,15 @@ public class EvaluationServiceControllerImpl implements BaseController<AddEvalua
     @Autowired
     EvaluationServiceRepository evaluationServiceRepository;
 
-    @RequestMapping (value = "/listByIds", method = RequestMethod.GET)
-    public JsonResult listByIds(@RequestParam ("ids") List<String> ids){
-        List<EvaluationService> evaluationServices = Lists.newArrayList(evaluationServiceRepository.findAllById(ids));
-        return ResultUtils.success(evaluationServices);
+    @RequestMapping (value = "/listVOByIds", method = RequestMethod.GET)
+    public JsonResult listVOByIds(@RequestParam ("ids") List<String> ids) {
+        return ResultUtils.success(StreamSupport.stream(evaluationServiceRepository.findAllById(ids).spliterator(), true).map(service -> {
+            EvaluationServiceVO vo = new EvaluationServiceVO();
+            CopyUtils.copyProperties(service, vo);
+            return vo;
+        }).collect(Collectors.toList()));
     }
+
 
     @Override
     public JsonResult add(AddEvaluationServiceDTO a) {

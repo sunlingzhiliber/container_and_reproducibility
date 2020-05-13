@@ -49,8 +49,6 @@ public class ServiceInstanceController {
 
 
 
-
-
     @RequestMapping (value = "", method = RequestMethod.GET)
     JsonResult list(SplitPageDTO splitPageDTO){
         return ResultUtils.success(serviceInstanceRepository.findAll(splitPageDTO.getPageable()));
@@ -73,8 +71,7 @@ public class ServiceInstanceController {
 
     @RequestMapping (value = "/listByIds", method = RequestMethod.GET)
     public JsonResult listByIds(@RequestParam("ids") List<String> ids){
-        ArrayList<ServiceInstance> serviceInstances = Lists.newArrayList(serviceInstanceRepository.findAllById(ids));
-        return ResultUtils.success(serviceInstances);
+        return ResultUtils.success(Lists.newArrayList(serviceInstanceRepository.findAllById(ids)));
     }
 
 

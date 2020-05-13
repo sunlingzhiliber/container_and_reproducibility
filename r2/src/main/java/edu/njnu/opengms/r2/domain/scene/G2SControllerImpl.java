@@ -46,7 +46,7 @@ public class G2SControllerImpl implements BaseController<AddG2SDTO, SplitPageDTO
             return ResultUtils.success(null);
         }
         List<String> evaluationServices = geographicSimulationScene.getEvaluation().getEvaluationServices();
-        return ResultUtils.success(containerFeign.listEvaluationServices(evaluationServices).getData());
+        return ResultUtils.success(containerFeign.listEvaluationServicesVO(evaluationServices).getData());
     }
 
     @RequestMapping (value = "/{id}/evaluationService/{evaluationId}", method = RequestMethod.DELETE)
@@ -194,25 +194,12 @@ public class G2SControllerImpl implements BaseController<AddG2SDTO, SplitPageDTO
         if(instances==null){
             return ResultUtils.success(null);
         }
-
         return ResultUtils.success(containerFeign.listInstanceByIds(instances.get(serviceId)).getData());
     }
 
 
 
-    @RequestMapping (value = "/{id}/getExpectedInstances", method = RequestMethod.GET)
-    public JsonResult getExpectedInstances(@PathVariable String id) {
-        GeographicSimulationScene geographicSimulationScene = g2SRepository.findById(id).orElseThrow(MyException::noObject);
-        Computation computation = geographicSimulationScene.getComputation();
-        if(computation==null){
-            return ResultUtils.success(null);
-        }
-        Set<String> modelExpectedInstances = computation.getModelExpectedInstances();
-        Set<String> processExpectedInstances = computation.getProcessExpectedInstances();
-        List<String> all=new ArrayList<>(modelExpectedInstances);
-        all.addAll(processExpectedInstances);
-        return ResultUtils.success(containerFeign.listInstanceByIds(all).getData());
-    }
+
 
 
     @RequestMapping (value = "/{id}/view", method = RequestMethod.GET)
@@ -224,9 +211,9 @@ public class G2SControllerImpl implements BaseController<AddG2SDTO, SplitPageDTO
         JSONObject jsonObject=new JSONObject();
 
         List<String> ids = geographicSimulationScene.getResourceCollect().getDataProcessServices();
-        jsonObject.put("dataProcessServices",containerFeign.listDataProcessServiceByIds(ids).getData());
+        jsonObject.put("dataProcessServices", containerFeign.listDataProcessServiceVOByIds(ids).getData());
         ids = geographicSimulationScene.getResourceCollect().getModelServices();
-        jsonObject.put("modelServices",containerFeign.listModelServiceByIds(ids).getData());
+        jsonObject.put("modelServices", containerFeign.listModelServiceVOByIds(ids).getData());
         ids=geographicSimulationScene.getResourceCollect().getDataServices();
         jsonObject.put("dataServices",containerFeign.listDataServiceByIds(ids).getData());
         g2SVO.setResourceCollect(jsonObject);
@@ -243,7 +230,7 @@ public class G2SControllerImpl implements BaseController<AddG2SDTO, SplitPageDTO
 
         ids=geographicSimulationScene.getEvaluation().getEvaluationServices();
         JSONArray jsonArray=new JSONArray();
-        jsonArray.addAll((Collection<? extends Object>) containerFeign.listEvaluationServices(ids).getData());
+        jsonArray.addAll((Collection<? extends Object>) containerFeign.listEvaluationServicesVO(ids).getData());
         g2SVO.setEvaluation(jsonArray );
 
         return ResultUtils.success(g2SVO);
@@ -266,7 +253,7 @@ public class G2SControllerImpl implements BaseController<AddG2SDTO, SplitPageDTO
     @Override
     public JsonResult list(SplitPageDTO findDTO) {
         Page<GeographicSimulationScene> all = g2SRepository.findAll(findDTO.getPageable());
-        return ResultUtils.success( all.map(g2s->{
+        return ResultUtils.success(all.map(g2s -> {
             G2SListVO vo=new G2SListVO();
             CopyUtils.copyProperties(g2s,vo);
             return vo;

@@ -26,5 +26,5 @@ public class AddDataServiceDTO implements ToDomainConverter<DataService> {
     String resourceUrl;
     String schemaPath;
     String key;
-    DataEnums type=DataEnums.OTHER;
+    DataEnums type;
 }
