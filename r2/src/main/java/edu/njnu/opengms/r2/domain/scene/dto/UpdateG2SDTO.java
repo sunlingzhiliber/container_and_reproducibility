@@ -20,4 +20,9 @@ public class UpdateG2SDTO implements ToDomainConverter<GeographicSimulationScene
     Computation computation;
     Evaluation evaluation;
     Boolean isPublish;
+
+    Integer w;
+    Integer H;
+    String rootXml;
+
 }

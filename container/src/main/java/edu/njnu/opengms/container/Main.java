@@ -1,7 +1,6 @@
 package edu.njnu.opengms.container;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * @ClassName Main
@@ -14,5 +13,8 @@ public class Main
 {
     public static void main(String[] args) {
 
+        String s = "12312.txt";
+        String extension = FilenameUtils.getExtension(s);
+        String prefix = FilenameUtils.getPrefix(s);
     }
 }

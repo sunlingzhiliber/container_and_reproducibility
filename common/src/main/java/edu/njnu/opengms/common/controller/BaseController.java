@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 
 /**
  * @InterfaceName BaseController
@@ -32,5 +36,5 @@ public interface BaseController<AD,FD,UD> {
     JsonResult get(@PathVariable ("id") String id);
 
     @RequestMapping (value = "/{id}", method = RequestMethod.PUT)
-    JsonResult update(@PathVariable ("id") String id, @RequestBody UD updateDTO);
+    JsonResult update(@PathVariable ("id") String id, @RequestBody UD updateDTO) throws ParserConfigurationException, SAXException, IOException;
 }

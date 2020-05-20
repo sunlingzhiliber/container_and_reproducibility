@@ -3,7 +3,7 @@ package edu.njnu.opengms.r2.domain.scene.vo;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import edu.njnu.opengms.r2.domain.scene.nodes.*;
+import edu.njnu.opengms.r2.domain.scene.nodes.ContextDefine;
 import lombok.Data;
 
 import java.util.Date;
@@ -26,7 +26,6 @@ public class G2SVO {
     @JsonFormat (pattern = "yyyy-MM-dd",timezone = "GMT+8")
     Date createTime;
     ContextDefine contextDefine;
-
     JSONObject resourceCollect;
     JSONObject simulationConceptGraph;
     JSONObject computation;

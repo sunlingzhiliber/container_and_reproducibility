@@ -15,10 +15,16 @@ import edu.njnu.opengms.r2.domain.scene.nodes.Evaluation;
 import edu.njnu.opengms.r2.domain.scene.vo.G2SListVO;
 import edu.njnu.opengms.r2.domain.scene.vo.G2SVO;
 import edu.njnu.opengms.r2.remote.ContainerFeign;
+import edu.njnu.opengms.r2.utils.MxGraphUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -37,6 +43,9 @@ public class G2SControllerImpl implements BaseController<AddG2SDTO, SplitPageDTO
 
     @Autowired
     ContainerFeign containerFeign;
+
+    @Value ("${web.upload-path}")
+    String webUploadPath;
 
 
     @RequestMapping (value = "/{id}/evaluationServices", method = RequestMethod.GET)
@@ -219,12 +228,21 @@ public class G2SControllerImpl implements BaseController<AddG2SDTO, SplitPageDTO
         g2SVO.setResourceCollect(jsonObject);
         jsonObject=new JSONObject();
 
-        jsonObject.put("xmlGraph",geographicSimulationScene.getSimulationConceptGraph().getXmlGraph());
+        jsonObject.put("imgGraph", geographicSimulationScene.getSimulationConceptGraph().getImgGraph());
         g2SVO.setSimulationConceptGraph(jsonObject);
         jsonObject=new JSONObject();
 
-        ids=new ArrayList<>(geographicSimulationScene.getComputation().getProcessExpectedInstances());
-        ids.addAll(geographicSimulationScene.getComputation().getModelExpectedInstances());
+        ids = new ArrayList<>();
+        Set<String> processExpectedInstances = geographicSimulationScene.getComputation().getProcessExpectedInstances();
+        Set<String> modelExpectedInstances = geographicSimulationScene.getComputation().getModelExpectedInstances();
+        if (processExpectedInstances != null) {
+            ids.addAll(processExpectedInstances);
+        }
+
+        if (modelExpectedInstances != null) {
+            ids.addAll(modelExpectedInstances);
+        }
+
         jsonObject.put("serviceInstances",containerFeign.listInstanceByIds(ids).getData());
         g2SVO.setComputation(jsonObject);
 
@@ -234,6 +252,16 @@ public class G2SControllerImpl implements BaseController<AddG2SDTO, SplitPageDTO
         g2SVO.setEvaluation(jsonArray );
 
         return ResultUtils.success(g2SVO);
+    }
+
+
+    @RequestMapping (value = "/{id}/folk", method = RequestMethod.POST)
+    public JsonResult folk(@PathVariable ("id") String id, @RequestBody AddG2SDTO a) {
+        GeographicSimulationScene geographicSimulationScene = g2SRepository.findById(id).orElseThrow(MyException::noObject);
+        a.convertTo(geographicSimulationScene);
+        geographicSimulationScene.setId(null);
+        geographicSimulationScene.setIsPublish(false);
+        return ResultUtils.success(g2SRepository.insert(geographicSimulationScene));
     }
 
 
@@ -271,7 +299,15 @@ public class G2SControllerImpl implements BaseController<AddG2SDTO, SplitPageDTO
     }
 
     @Override
-    public JsonResult update(String id, UpdateG2SDTO updateDTO) {
+    public JsonResult update(String id, UpdateG2SDTO updateDTO) throws ParserConfigurationException, SAXException, IOException {
+        String rootXml = updateDTO.getRootXml();
+        Integer h = updateDTO.getH();
+        Integer w = updateDTO.getW();
+        if (h != null && w != null & rootXml != null) {
+            String uuid = UUID.randomUUID().toString();
+            MxGraphUtils.exportImg(rootXml, w, h, webUploadPath + File.separator + uuid);
+            updateDTO.getSimulationConceptGraph().setImgGraph(uuid);
+        }
         GeographicSimulationScene geographicSimulationScene = g2SRepository.findById(id).orElseThrow(MyException::noObject);
         updateDTO.updateTo(geographicSimulationScene);
         return ResultUtils.success(g2SRepository.save(geographicSimulationScene));

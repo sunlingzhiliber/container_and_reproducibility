@@ -1,6 +1,6 @@
 package support;
 
-import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.RuntimeUtil;
 
 import java.io.File;
 
@@ -13,8 +13,14 @@ import java.io.File;
  */
 public class Main {
     public static void main(String[] args) {
-        File file=new File("D:\\EyeFoo3\\tmall.ico");
-        String name = FileUtil.getName(file);
-        System.out.println(name);
+
+        String cmd = "Rscript.exe E:\\project\\container_and_reproducibility\\encapsulation\\Instance\\5ebe8af7c4c05c3759e3c012\\geodetector.R E:\\project\\container_and_reproducibility\\encapsulation\\Instance\\5ebe8af7c4c05c3759e3c012\\inputVariables.csv incidence soiltype,watershed,elevation";
+
+        String[] strings = new String[1];
+
+        Process process = RuntimeUtil.exec(strings, new File("E:\\project\\container_and_reproducibility\\encapsulation\\Instance\\5ebe8af7c4c05c3759e3c012"), cmd);
+        RuntimeUtil.getResult(process);
+
+
     }
 }

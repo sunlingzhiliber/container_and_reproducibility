@@ -14,9 +14,9 @@ import java.util.Date;
  */
 @Data
 public class BaseEntity {
-    @JsonFormat (pattern = "yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat (pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
-    @JsonFormat (pattern = "yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat (pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
 

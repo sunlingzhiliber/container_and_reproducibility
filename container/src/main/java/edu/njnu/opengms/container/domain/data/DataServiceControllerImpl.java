@@ -97,7 +97,14 @@ public class DataServiceControllerImpl implements BaseController<AddDataServiceD
         try {
             resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
-                MediaType mediaType = MediaType.parseMediaType(fileStorage.getContentType());
+                MediaType mediaType;
+                if (fileStorage.getContentType() == null || fileStorage.getContentType().equals("null")) {
+                    mediaType = null;
+                } else {
+
+                    mediaType = MediaType.parseMediaType(fileStorage.getContentType());
+                }
+
                 return ResponseEntity.ok()
                         .contentType(mediaType)
                         .header(HttpHeaders.CONTENT_DISPOSITION,"attachment;fileName="+uri.toASCIIString())
@@ -117,7 +124,9 @@ public class DataServiceControllerImpl implements BaseController<AddDataServiceD
         //加入时间戳
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date = sdf.format(new Date());
-        AddDataServiceDTO a=AddDataServiceDTO.builder().key(insert.getKey()).name(date+"_"+insert.getName()).build();
+        String baseName = FilenameUtils.getBaseName(insert.getName());
+        String extension = FilenameUtils.getExtension(insert.getName());
+        AddDataServiceDTO a = AddDataServiceDTO.builder().key(insert.getKey()).name(baseName + "_" + date + "." + extension).build();
         a.setKey(insert.getKey());
         a.convertTo(dataService);
         return ResultUtils.success(dataRepository.insert(dataService));

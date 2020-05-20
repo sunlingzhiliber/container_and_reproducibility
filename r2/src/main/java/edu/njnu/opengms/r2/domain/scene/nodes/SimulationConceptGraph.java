@@ -12,4 +12,5 @@ import lombok.Data;
 @Data
 public class SimulationConceptGraph  {
     String xmlGraph;
+    String imgGraph;
 }

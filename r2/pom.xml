@@ -21,6 +21,16 @@
 
     <dependencies>
 
+
+        <dependency>
+            <groupId>com.mxgraph</groupId>
+            <artifactId>all</artifactId>　　
+            <scope>system</scope>
+            　　
+            <systemPath>${project.basedir}/libs/mxgraph-all.jar</systemPath>
+        </dependency>
+
+
         <dependency>
             <groupId>edu.njnu.opengms</groupId>
             <artifactId>common</artifactId>

@@ -12,6 +12,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @ClassName njnu.opengms.modelclient.Client
@@ -50,23 +51,14 @@ public class Client {
     }
 
 
-    public String  receiveMessage(SocketChannel socketChannel) throws IOException {
-        int len=socketChannel.read(readBuffer);
-        readBuffer.flip();
-        byte[] bytes = new byte[len];
-        readBuffer.get(bytes);
-        readBuffer.clear();
-        return new String(bytes,"UTF-8");
-    }
-
-
     public void start(SocketAddress socketAddress,String id){
         try (SocketChannel socketChannel = SocketChannel.open()) {
             socketChannel.connect(socketAddress);
             System.out.println("传输实例ID");
             sendMessage(socketChannel,"instanceId:"+id);
             System.out.println("获取实例信息");
-            ServiceInstance instance= JSONUtil.parseObj(receiveMessage(socketChannel)).toBean(ServiceInstance.class);
+            String message = receiveMessage(socketChannel);
+            ServiceInstance instance = JSONUtil.parseObj(message).toBean(ServiceInstance.class);
             InstanceEnum instanceEnum = instance.getInstanceEnum();
             if(instanceEnum.equals(InstanceEnum.MODEL)){
                 ModelEncapsulation modelEncapsulation =new ModelEncapsulation(JSONUtil.toBean((JSONObject) instance.getService(),ModelService.class));
@@ -87,9 +79,16 @@ public class Client {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
+    }
+
+    public String receiveMessage(SocketChannel socketChannel) throws IOException {
+        int len = socketChannel.read(readBuffer);
+        readBuffer.flip();
+        byte[] bytes = new byte[len];
+        readBuffer.get(bytes);
+        readBuffer.clear();
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 }
 
