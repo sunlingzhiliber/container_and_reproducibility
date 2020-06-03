@@ -35,52 +35,57 @@ public class ModelEncapsulation implements Instance {
         ModelBehavior behavior = modelService.getBehavior();
         Path assemblySpace=PathUtils.getAssembly();
         Path workSpace = PathUtils.getWorkSpace(instanceId);
-        FileUtil.copyFilesFromDir(assemblySpace.toFile(), workSpace.toFile(), true);
-
-        File fileInput = workSpace.resolve("inputVariables.csv").toFile();
-        String y = null, xList = null;
+        FileUtil.copyContent(assemblySpace.toFile(), workSpace.toFile(), true);
+        Path fileInputPath = workSpace.resolve("spatialData.zip");
+        File fileInput = fileInputPath.toFile();
         List<ModelEvent> inputs = behavior.getInputs();
         for (ModelEvent input : inputs) {
-
             DataUtils.download(input.getDataServiceId(), fileInput);
         }
+        Path shapeFileDirPath = workSpace.resolve("shapefileDir");
+        File dirZip = shapeFileDirPath.toFile();
+        ZipUtil.unzip(fileInput, dirZip);
+        List<File> fileList = FileUtil.loopFiles(dirZip, (file) -> file.getName().endsWith(".shp"));
+        File shapfile = fileList.get(0);
 
+        String feild = null, pValue = null, permutations = null, cpu_count = null;
         List<Parameter> parameters = behavior.getParameters();
         for (Parameter parameter : parameters) {
-            if (parameter.getName().equals("Y")) {
-                y = parameter.getValue();
+            String name = parameter.getName();
+            String value = parameter.getValue();
+            if (name.equals("feild")) {
+                feild = value;
+            } else if (name.equals("pValue")) {
+                pValue = value;
+            } else if (name.equals("permutations")) {
+                permutations = value;
             } else {
-                xList = parameter.getValue();
+                cpu_count = value;
             }
         }
 
         String cmd;
         //注意正常来说，R的环境变量应该动态获取，但是目前在这里写死了
-        cmd = "D:\\R-4.0.0\\bin\\Rscript geodetector.R " + fileInput.getAbsolutePath() + " " + y + " " + xList;
+        cmd = "D:\\R-4.0.0\\bin\\Rscript mcAndNeighborMap.R " + shapfile.getAbsolutePath() + " " + feild;
         Process process = RuntimeUtil.exec(null, workSpace.toFile(), cmd);
         RuntimeUtil.getResult(process);
 
+        cmd = "python localMoran.py " + shapfile.getAbsolutePath() + " " + feild + " " + permutations + " " + pValue + " " + cpu_count;
+        process = RuntimeUtil.exec(null, workSpace.toFile(), cmd);
+        RuntimeUtil.getResult(process);
+
         List<ModelEvent> outputs = behavior.getOutputs();
-
-        Boolean hasInteractionAndEcologicalFlag = false;
-        if (xList.split(",").length > 1) {
-            hasInteractionAndEcologicalFlag = true;
-        }
-
         for (ModelEvent output : outputs) {
-            if (output.getName().equals("risk_detector")) {
-                List<File> fileList = FileUtil.loopFiles(workSpace.toFile(), (file) -> file.getName().startsWith("out_risk_"));
-                File[] files = fileList.toArray(new File[fileList.size()]);
-                ZipUtil.zip(workSpace.resolve("out_risk.zip").toFile(), false, files);
-                output.setDataServiceId(DataUtils.upload(workSpace.resolve("out_risk.zip").toFile()));
-            } else if (output.getName().equals("factor_detector")) {
-                output.setDataServiceId(DataUtils.upload(workSpace.resolve("out_factor.csv").toFile()));
-            } else if (output.getName().equals("ecological_detector") && hasInteractionAndEcologicalFlag == true) {
-                output.setDataServiceId(DataUtils.upload(workSpace.resolve("out_ecological.csv").toFile()));
-            } else if (output.getName().equals("interaction_detector") && hasInteractionAndEcologicalFlag == true) {
-                output.setDataServiceId(DataUtils.upload(workSpace.resolve("out_interaction.csv").toFile()));
+            if (output.getName().equals("clusterMap")) {
+                List<File> localMoran = FileUtil.loopFiles(workSpace.resolve("output").toFile(), (file) -> file.getName().startsWith("localMoran"));
+                output.setDataServiceId(DataUtils.upload(localMoran.get(0)));
+            } else if (output.getName().equals("moranCoefficient")) {
+                List<File> mc = FileUtil.loopFiles(workSpace.resolve("output").toFile(), (file) -> file.getName().startsWith("mc"));
+                output.setDataServiceId(DataUtils.upload(mc.get(0)));
+            } else {
+                List<File> neighborsMap = FileUtil.loopFiles(workSpace.resolve("output").toFile(), (file) -> file.getName().startsWith("neighborsMap"));
+                output.setDataServiceId(DataUtils.upload(neighborsMap.get(0)));
             }
-
         }
     }
 }

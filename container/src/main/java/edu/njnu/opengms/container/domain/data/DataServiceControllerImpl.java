@@ -81,7 +81,6 @@ public class DataServiceControllerImpl implements BaseController<AddDataServiceD
             }else{
                 throw new MyException("发布OGC失败");
             }
-
         }else{
            throw new MyException("该数据不支持OGC相关服务");
         }
@@ -101,10 +100,8 @@ public class DataServiceControllerImpl implements BaseController<AddDataServiceD
                 if (fileStorage.getContentType() == null || fileStorage.getContentType().equals("null")) {
                     mediaType = null;
                 } else {
-
                     mediaType = MediaType.parseMediaType(fileStorage.getContentType());
                 }
-
                 return ResponseEntity.ok()
                         .contentType(mediaType)
                         .header(HttpHeaders.CONTENT_DISPOSITION,"attachment;fileName="+uri.toASCIIString())

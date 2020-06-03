@@ -86,7 +86,6 @@ public interface ContainerFeign {
     @RequestMapping (value = "/evaluation_service/listVOByIds", method = RequestMethod.GET)
     JsonResult listEvaluationServicesVO(@RequestParam ("ids") List<String> evaluationServices);
 
-
     @RequestMapping (value = "/data_service/listByIds", method = RequestMethod.GET)
     JsonResult listDataServiceByIds(@RequestParam ("ids") List<String> id);
 
