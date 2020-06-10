@@ -1,15 +1,13 @@
 package edu.njnu.opengms.r2;
 
-import com.mxgraph.canvas.mxICanvas2D;
-import com.mxgraph.reader.mxSaxOutputHandler;
-import org.xml.sax.InputSource;
+import cn.hutool.core.io.FileUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
+import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
+import java.util.List;
 
 /**
  * @ClassName Main
@@ -20,21 +18,12 @@ import java.io.StringReader;
  */
 public class Main {
     public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
-
-
-    }
-
-    protected static void parseXmlSax(String xml, mxICanvas2D canvas)
-            throws ParserConfigurationException, IOException, SAXException {
-        // Creates SAX handler for drawing to graphics handle
-        mxSaxOutputHandler handler = new mxSaxOutputHandler(canvas);
-
-        // Creates SAX parser for handler
-        XMLReader reader = SAXParserFactory.newInstance().newSAXParser()
-                .getXMLReader();
-        reader.setContentHandler(handler);
-
-        // Renders XML data into image
-        reader.parse(new InputSource(new StringReader(xml)));
+        List<File> fileList = FileUtil.loopFiles(new File("F:\\gitpage_blog\\sunlingzhiliber.github.io-master\\siteForTang\\photoWall\\img\\beauty"));
+        int index = 0;
+        for (File file : fileList) {
+            String extension = FilenameUtils.getExtension(file.getName());
+            file.renameTo(new File("F:\\gitpage_blog\\sunlingzhiliber.github.io-master\\siteForTang\\photoWall\\img\\beauty\\" + index + "." + extension));
+            index++;
+        }
     }
 }
